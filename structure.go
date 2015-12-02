@@ -189,6 +189,30 @@ type MediaSegment struct {
 	Map             *Map      // EXT-X-MAP displayed before the segment
 	Discontinuity   bool      // EXT-X-DISCONTINUITY indicates an encoding discontinuity between the media segment that follows it and the one that preceded it (i.e. file format, number and type of tracks, encoding parameters, encoding sequence, timestamp sequence)
 	ProgramDateTime time.Time // EXT-X-PROGRAM-DATE-TIME tag associates the first sample of a media segment with an absolute date and/or time
+
+	// Cue related information
+	CueOut  *CueOut  // EXT-X-CUE-OUT displayed before the start of cue segments
+	CueIn   *CueIn   // EXT-X-CUE-IN displayed before the end of cue segments
+	CueSpan *CueSpan // EXT-X-CUE-SPAN displayed with segment between in and out.
+}
+
+// CueOut is EXT-X-CUE-OUT
+type CueOut struct {
+	ID       string
+	CueID    string
+	Duration float64
+}
+
+// CueIn is EXT-X-CUE-IN
+type CueIn struct {
+	ID    string
+	CueID string
+}
+
+// CueSpan is EXT-X-CUE-SPAN
+type CueSpan struct {
+	ID             string
+	TimeFromSignal string
 }
 
 // This structure represents information about stream encryption.

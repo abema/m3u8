@@ -636,3 +636,33 @@ func (p *MediaPlaylist) SetProgramDateTime(value time.Time) error {
 	p.Segments[(p.tail-1)%p.capacity].ProgramDateTime = value
 	return nil
 }
+
+// Set cue-in parameters.
+// EXT-X-CUE-IN tag represents end of the cue.
+func (p *MediaPlaylist) SetCueIn(value *CueIn) error {
+	if p.count == 0 {
+		return errors.New("playlist is empty")
+	}
+	p.Segments[(p.tail-1)%p.capacity].CueIn = value
+	return nil
+}
+
+// Set cue-out parameters.
+// EXT-X-CUE-OUT tag represents beginning of the cue
+func (p *MediaPlaylist) SetCueOut(value *CueOut) error {
+	if p.count == 0 {
+		return errors.New("playlist is empty")
+	}
+	p.Segments[(p.tail-1)%p.capacity].CueOut = value
+	return nil
+}
+
+// Set cue-span parameters
+// EXT-X-CUE-SPAN tag represents segment info of the cue
+func (p *MediaPlaylist) SetCueSpan(value *CueSpan) error {
+	if p.count == 0 {
+		return errors.New("playlist is empty")
+	}
+	p.Segments[(p.tail-1)%p.capacity].CueSpan = value
+	return nil
+}

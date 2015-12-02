@@ -461,6 +461,44 @@ func decodeLineOfMediaPlaylist(p *MediaPlaylist, wv *WV, state *decodingState, l
 	case strings.HasPrefix(line, "#EXT-X-I-FRAMES-ONLY"):
 		state.listType = MEDIA
 		p.Iframe = true
+	case strings.HasPrefix(line, "#EXT-X-CUE-OUT"):
+		state.listType = MEDIA
+		cueOut := &CueOut{}
+		for k, v := range decodeParamsLine(line[14:]) {
+			switch k {
+			case "ID":
+				cueOut.ID = v
+			case "CUE":
+				cueOut.CueID = v
+			case "DURATION":
+				if cueOut.Duration, err = strconv.ParseFloat(v, 64); strict && err != nil {
+					return fmt.Errorf("Duration parsing error: %s", err)
+				}
+			}
+		}
+		p.SetCueOut(cueOut)
+	case strings.HasPrefix(line, "#EXT-X-CUE-IN"):
+		cueIn := &CueIn{}
+		for k, v := range decodeParamsLine(line[13:]) {
+			switch k {
+			case "ID":
+				cueIn.ID = v
+			case "CUE":
+				cueIn.CueID = v
+			}
+		}
+		p.SetCueIn(cueIn)
+	case strings.HasPrefix(line, "#EXT-X-CUE-SPAN"):
+		cueSpan := &CueSpan{}
+		for k, v := range decodeParamsLine(line[15:]) {
+			switch k {
+			case "ID":
+				cueSpan.ID = v
+			case "TIMEFROMSIGNAL":
+				cueSpan.TimeFromSignal = v
+			}
+		}
+		p.SetCueSpan(cueSpan)
 	case !strings.HasPrefix(line, "#"):
 		if state.tagInf {
 			p.Append(line, state.duration, title)
