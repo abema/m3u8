@@ -216,6 +216,59 @@ func TestDecodeMediaPlaylistWithAutodetection(t *testing.T) {
 	// fmt.Println(pp.Encode().String())
 }
 
+func TestDecodeMediaPlaylistWithCue(t *testing.T) {
+	f, err := os.Open("sample-playlists/cue-mid.m3u8")
+	if err != nil {
+		t.Fatal(err)
+	}
+	p, listType, err := DecodeFrom(bufio.NewReader(f), true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pp := p.(*MediaPlaylist)
+	CheckType(t, pp)
+	if listType != MEDIA {
+		t.Error("Cue not recognized as media playlist.")
+	}
+
+	co := pp.Segments[2].CueOut
+	cs := pp.Segments[3].CueSpan
+	ci := pp.Segments[5].CueIn
+
+	// CueOut
+	if co == nil {
+		t.Error("CueOut not recognized")
+	}
+	if co.ID != "1234" {
+		t.Errorf("CueOut has invalid ID %s", co.ID)
+	}
+	if co.Duration != 30 {
+		t.Errorf("CueOut has invalid duration %f", co.Duration)
+	}
+	if co.CueID == "" {
+		t.Errorf("CueOut has no cueID")
+	}
+	if cs == nil {
+		t.Error("CueSpan not recognized")
+	}
+	if cs.ID != "1234" {
+		t.Errorf("CueSpan has invalid ID %s", cs.ID)
+	}
+	if cs.TimeFromSignal != "PT10.01S" {
+		t.Errorf("CueSpan has invalid TimeFromSignal %s", cs.TimeFromSignal)
+	}
+	if ci == nil {
+		t.Error("CueIn not recognized")
+	}
+	if ci.ID != "1234" {
+		t.Errorf("CueIn has invalid ID %s", ci.ID)
+	}
+	if ci.CueID == "" {
+		t.Error("CueIn has no cueID")
+	}
+
+}
+
 /***************************
  *  Code parsing examples  *
  ***************************/
